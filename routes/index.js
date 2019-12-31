@@ -42,10 +42,10 @@ router.get('/', function(req, res, next) {
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
   if(user!='' && imagename !=''){
-    res.render('index',{title:'Attamdance_Manager',username:user,imagename:imagename});
+    res.render('index',{title:'Attandance_Manager',username:user,imagename:imagename});
   }
   else{
-    res.render('index',{title:'Attamdance_Manager',username:'',imagename:''});
+    res.render('index',{title:'Attandance_Manager',username:'',imagename:''});
   }
 });
 
@@ -53,10 +53,10 @@ router.get('/signup',function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
   if(user!='' && imagename !=''){
-    res.render('signup',{title:'Attamdance_Manager',username:user,imagename:imagename});
+    res.render('signup',{title:'Attandance_Manager',username:user,imagename:imagename});
   }
   else{
-    res.render('signup',{title:'Attamdance_Manager',username:'',imagename:''});
+    res.render('signup',{title:'Attandance_Manager',username:'',imagename:''});
   }
   
 })
@@ -87,10 +87,10 @@ router.get('/login',function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
   if(user!='' && imagename !=''){
-    res.render('login',{title:'Attamdance_Manager',username:user,imagename:imagename});
+    res.render('login',{title:'Attandance_Manager',username:user,imagename:imagename});
   }
   else{
-    res.render('login',{title:'Attamdance_Manager',username:'',imagename:''});
+    res.render('login',{title:'Attandance_Manager',username:'',imagename:''});
   }
 })
 
