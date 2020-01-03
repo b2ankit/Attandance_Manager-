@@ -229,6 +229,15 @@ router.get('/absent/:id',checkloginuser,function(req,res,next){
   res.redirect('/');
 })
 
+router.get('/delete/:id',checkloginuser,function(req,res,next){
+  var id = req.params.id;
+  var delete_entry = subjectModel.findByIdAndDelete(id);
+  delete_entry.exec(function(err,res1){
+    if(err) throw err;
+    res.redirect('/');
+  })
+})
+
 router.get('/forget',checkloginuser,function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
