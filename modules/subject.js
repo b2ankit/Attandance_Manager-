@@ -13,7 +13,7 @@ var conn = mongoose.Connection;
 
 var subjectSchema = new mongoose.Schema({
     primary_key:String,
-    subject:{type: String, unique: true},
+    subject:String,
     present:Number,
     absent:Number,
     percentage:Number,
