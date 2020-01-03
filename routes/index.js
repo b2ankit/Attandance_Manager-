@@ -37,7 +37,14 @@ var upload = multer({
   }).single('file');
 
 
-
+//middleware for login user check
+function checkloginuser(req,res,next){
+  var user  = localStorage.getItem('loginUser');
+  if(user==null){
+    res.redirect('/login');
+  }
+  next();
+}
 
 
 /* GET home page. */
@@ -144,7 +151,7 @@ router.post('/login',function(req,res,next){
 
 })
 
-router.get('/addsub',function(req,res,next){
+router.get('/addsub',checkloginuser,function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
   if(user!='' && imagename !=''){
@@ -156,7 +163,7 @@ router.get('/addsub',function(req,res,next){
 })
 
 
-router.post('/addsub',function(req,res,next){
+router.post('/addsub',checkloginuser,function(req,res,next){
   var key = localStorage.getItem('primary_key');
 
   var subjectDetails = new subjectModel({
@@ -175,7 +182,7 @@ router.post('/addsub',function(req,res,next){
 })
 
 
-router.get('/present/:id',function(req,res,next){
+router.get('/present/:id',checkloginuser,function(req,res,next){
   var id = req.params.id;
   var persentfind = subjectModel.findById(id);
   persentfind.exec(function(err,data){
@@ -199,7 +206,7 @@ router.get('/present/:id',function(req,res,next){
 })
 
 
-router.get('/absent/:id',function(req,res,next){
+router.get('/absent/:id',checkloginuser,function(req,res,next){
   var id = req.params.id;
   var absentfind = subjectModel.findById(id);
   absentfind.exec(function(err,data){
@@ -222,7 +229,7 @@ router.get('/absent/:id',function(req,res,next){
   res.redirect('/');
 })
 
-router.get('/forget',function(req,res,next){
+router.get('/forget',checkloginuser,function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
   if(user!='' && imagename !=''){
@@ -233,7 +240,7 @@ router.get('/forget',function(req,res,next){
   }
 })
 
-router.get('/reset',function(req,res,next){
+router.get('/reset',checkloginuser,function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
   if(user!='' && imagename !=''){
@@ -245,7 +252,7 @@ router.get('/reset',function(req,res,next){
 })
 
 
-router.get('/logout', function(req, res, next) {
+router.get('/logout',checkloginuser, function(req, res, next) {
   localStorage.removeItem('userToken');
   localStorage.removeItem('loginUser');
   localStorage.removeItem('userimage');
