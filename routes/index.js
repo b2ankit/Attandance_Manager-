@@ -133,12 +133,39 @@ router.post('/login',function(req,res,next){
 
 })
 
+router.get('/addsub',function(req,res,next){
+  var user = localStorage.getItem('loginUser');
+  var imagename = localStorage.getItem('userimage');
+  if(user!='' && imagename !=''){
+    res.render('addsub',{title:'Attandance_Manager',username:user,imagename:imagename});
+  }
+  else{
+    res.render('addsub',{title:'Attandance_Manager',username:'',imagename:''});
+  }
+})
+
+
+
 router.get('/forget',function(req,res,next){
-  res.render('forget',{title:'Attandance_manager'});
+  var user = localStorage.getItem('loginUser');
+  var imagename = localStorage.getItem('userimage');
+  if(user!='' && imagename !=''){
+    res.render('forget',{title:'Attandance_Manager',username:user,imagename:imagename});
+  }
+  else{
+    res.render('forget',{title:'Attandance_Manager',username:'',imagename:''});
+  }
 })
 
 router.get('/reset',function(req,res,next){
-  res.render('reset',{title:'Attandance_manager'});
+  var user = localStorage.getItem('loginUser');
+  var imagename = localStorage.getItem('userimage');
+  if(user!='' && imagename !=''){
+    res.render('reset',{title:'Attandance_Manager',username:user,imagename:imagename});
+  }
+  else{
+    res.render('reset',{title:'Attandance_Manager',username:'',imagename:''});
+  }
 })
 
 
