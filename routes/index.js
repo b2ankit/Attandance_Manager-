@@ -184,7 +184,7 @@ router.get('/present/:id',function(req,res,next){
     var absent = data.absent;
     present++;
     if(absent!=0){
-      var per = (present*100)/(present+absent);
+      var per = Math.round((present*100)/(present+absent));
     }
     else if(absent==0 && present !=0){
       var per = 100;
@@ -208,7 +208,7 @@ router.get('/absent/:id',function(req,res,next){
     var present = data.present;
     absent++;
     if(absent!=0){
-      var per = (present*100)/(present+absent);
+      var per = Math.round((present*100)/(present+absent));
     }
     else if(absent==0 && present!=0){
       var per = 100;
