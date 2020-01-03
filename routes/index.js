@@ -8,6 +8,9 @@ var path = require('path');
 //Require login module of Students
 var singupModel=require('../modules/signup');
 
+var subjectModel = require('../modules/subject');
+
+
 //Require node localStorage npm
 if (typeof localStorage === "undefined" || localStorage === null) {
   var LocalStorage = require('node-localstorage').LocalStorage;
@@ -41,11 +44,17 @@ var upload = multer({
 router.get('/', function(req, res, next) {
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
+  var key = localStorage.getItem('primary_key');
   if(user!='' && imagename !=''){
-    res.render('index',{title:'Attandance_Manager',username:user,imagename:imagename});
+    var subjectfind = subjectModel.find({'primary_key':key});
+    subjectfind.exec(function(err,data){
+      if(err) throw err;
+      res.render('index',{title:'Attandance_Manager',username:user,imagename:imagename,records:data});
+    })
+    
   }
   else{
-    res.render('index',{title:'Attandance_Manager',username:'',imagename:''});
+    res.render('index',{title:'Attandance_Manager',username:'',imagename:'',records:''});
   }
 });
 
@@ -108,6 +117,7 @@ router.post('/login',function(req,res,next){
       var user = data.name;
       var imagename = data.imagename;
       var id = data.id;
+      var email = data.email;
 
       //start the token
       var token = jwt.sign({userId:id},'LoginToken');
@@ -118,6 +128,7 @@ router.post('/login',function(req,res,next){
       //Save login username in Local Storage
       localStorage.setItem('loginUser',user);
       localStorage.setItem('userimage',imagename);
+      localStorage.setItem('primary_key',email);
       // res.render('index',{title:'Student Records',username:user,imagename:imagename});
       res.redirect('/');
     }
@@ -145,6 +156,71 @@ router.get('/addsub',function(req,res,next){
 })
 
 
+router.post('/addsub',function(req,res,next){
+  var key = localStorage.getItem('primary_key');
+
+  var subjectDetails = new subjectModel({
+    primary_key:key,
+    subject : req.body.subject,
+    present:0,
+    absent:0,
+    percentage:0,
+    
+  })
+  subjectDetails.save(function(err,res1){
+    if(err) throw err;
+    
+    res.redirect('/')
+  })
+})
+
+
+router.get('/present/:id',function(req,res,next){
+  var id = req.params.id;
+  var persentfind = subjectModel.findById(id);
+  persentfind.exec(function(err,data){
+    if(err)throw err;
+    var present = data.present;
+    var absent = data.absent;
+    present++;
+    if(absent!=0){
+      var per = (present*100)/(present+absent);
+    }
+    else if(absent==0 && present !=0){
+      var per = 100;
+    }
+
+  var presentupdate = subjectModel.findByIdAndUpdate(id,{present:present,percentage:per});
+  presentupdate.exec(function(err,res){
+    if(err) throw err;
+  });
+  });
+  res.redirect('/');
+})
+
+
+router.get('/absent/:id',function(req,res,next){
+  var id = req.params.id;
+  var absentfind = subjectModel.findById(id);
+  absentfind.exec(function(err,data){
+    if(err)throw err;
+    var absent = data.absent;
+    var present = data.present;
+    absent++;
+    if(absent!=0){
+      var per = (present*100)/(present+absent);
+    }
+    else if(absent==0 && present!=0){
+      var per = 100;
+    }
+
+  var presentupdate = subjectModel.findByIdAndUpdate(id,{absent:absent,percentage:per});
+  presentupdate.exec(function(err,res){
+    if(err) throw err;
+  });
+  });
+  res.redirect('/');
+})
 
 router.get('/forget',function(req,res,next){
   var user = localStorage.getItem('loginUser');
@@ -173,6 +249,7 @@ router.get('/logout', function(req, res, next) {
   localStorage.removeItem('userToken');
   localStorage.removeItem('loginUser');
   localStorage.removeItem('userimage');
+  localStorage.removeItem('primary_key');
   res.redirect('/');
 });
 

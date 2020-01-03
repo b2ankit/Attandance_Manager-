@@ -8,7 +8,7 @@
               <th style="text-align: center; padding: 10px;">Subject Name</th>
               <th style="text-align: center; padding: 10px;">Total Present</th> 
               <th style="text-align: center; padding: 10px;">Total Absent</th>
-              <th style="text-align: center; padding: 10px;">Presentage</th>
+              <th style="text-align: center; padding: 10px;">Precentage</th>
               <th style="text-align: center; padding: 10px;">Present</th>
               <th style="text-align: center; padding: 10px;">Absent</th> 
               
@@ -16,19 +16,18 @@
             </tr>
           </thead>
           <tbody>
-              
-                <tr>
-                  
-                  <td>Physics</td>
-                  <td>10</td>
-                  <td>10</td>
-                  <td>50%</td>
-                  <td><a class="btn btn-success btn-xs" href="#"><i class="fa fa-plus"></i></a></td>
-                  <td><a class="btn btn-danger btn-xs" href="#"><i class="fa fa-minus"></i></a></td>
-                  <td><a class="btn btn-primary btn-xs" href="#"><i class="fa fa-edit"></i></a>
-                  <a class="btn btn-danger btn-xs" href="#"><i class="fa fa-trash"></i></a></td>
+            <% records.forEach(function(row) {%>
+                <tr>  
+                  <td><%=row.subject%></td>
+                  <td><%=row.present%></td>
+                  <td><%=row.absent%></td>
+                  <td><%=row.percentage%>%</td>
+                  <td><a class="btn btn-success btn-xs" href="/present/<%=row._id%>"><i class="fa fa-plus"></i></a></td>
+                  <td><a class="btn btn-danger btn-xs" href="/absent/<%=row._id%>"><i class="fa fa-plus"></i></a></td>
+                  <td><a class="btn btn-primary btn-xs" href="/edit/<%=row._id%>"><i class="fa fa-edit"></i></a>
+                  <a class="btn btn-danger btn-xs" href="/delete/<%=row._id%>"><i class="fa fa-trash"></i></a></td>
                 </tr>
-               
+             <%})%>  
           </tbody>
         </table>  
       </div>
