@@ -238,6 +238,43 @@ router.get('/delete/:id',checkloginuser,function(req,res,next){
   })
 })
 
+router.get('/edit/:id',checkloginuser,function(req,res,next){
+  var id = req.params.id;
+  var user = localStorage.getItem('loginUser');
+  var imagename = localStorage.getItem('userimage');
+  var editdetails = subjectModel.find({_id:id});
+  editdetails.exec(function(err,data){
+  if(err) throw err;
+  res.render('edit',{title:'Attandance_Manager',username:user,imagename:imagename,records:data});
+  })
+  
+})
+
+router.post('/edit',checkloginuser,function(req,res,next){
+  var id = req.body.userid;
+  var present = parseInt(req.body.present);
+  var absent = parseInt(req.body.absent);
+  var per;
+  if(absent!=0){
+    per = Math.round((present*100)/(present+absent));
+
+  }
+  else{
+    per = 100;
+  }
+
+  var updatedetails = subjectModel.findByIdAndUpdate(id,{
+    subject:req.body.subject,
+    present:req.body.present,
+    absent:req.body.absent,
+    percentage:per,
+  })
+  updatedetails.exec(function(err,data){
+    if(err) throw err;
+    res.redirect('/');
+  })
+})
+
 router.get('/forget',checkloginuser,function(req,res,next){
   var user = localStorage.getItem('loginUser');
   var imagename = localStorage.getItem('userimage');
