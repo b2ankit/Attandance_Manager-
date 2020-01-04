@@ -3,6 +3,9 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 var multer = require('multer');
 var path = require('path');
+var async = require("async");
+var nodemailer = require("nodemailer");
+var crypto = require("crypto");
 
 
 //Require login module of Students
@@ -275,27 +278,125 @@ router.post('/edit',checkloginuser,function(req,res,next){
   })
 })
 
-router.get('/forget',checkloginuser,function(req,res,next){
-  var user = localStorage.getItem('loginUser');
-  var imagename = localStorage.getItem('userimage');
-  if(user!='' && imagename !=''){
-    res.render('forget',{title:'Attandance_Manager',username:user,imagename:imagename});
-  }
-  else{
-    res.render('forget',{title:'Attandance_Manager',username:'',imagename:''});
-  }
+router.get('/forget',function(req,res,next){
+ res.render('forget',{title:'Attandance_Manager',username:'',imagename:''});
 })
 
-router.get('/reset',checkloginuser,function(req,res,next){
-  var user = localStorage.getItem('loginUser');
-  var imagename = localStorage.getItem('userimage');
-  if(user!='' && imagename !=''){
-    res.render('reset',{title:'Attandance_Manager',username:user,imagename:imagename});
-  }
-  else{
-    res.render('reset',{title:'Attandance_Manager',username:'',imagename:''});
-  }
-})
+// router.get('/reset',function(req,res,next){
+//   res.render('reset',{title:'Attandance_Manager',username:'',imagename:''});
+//  })
+
+
+router.post('/forget',function(req,res,next){
+  async.waterfall([
+    function(done){
+      crypto.randomBytes(20,function(err,buf){
+        var token = buf.toString('hex');
+        done(err,token);
+      });
+    },
+    function(token,done){
+      singupModel.findOne({email:req.body.email},function(err,user){
+        if(!user){
+          console.log('Error No account with the email Id');
+          // req.flash('error', 'No account with that email address exists.');
+          return res.redirect('/signup');
+        }
+
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() +3600000;
+
+        user.save(function(err){
+          done(err,token,user);
+        });
+      });
+    },
+    function(token,user,done){
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail', 
+        auth: {
+          user: 'ankit19351@gmail.com',
+          pass: 'your password'
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'ankit19351@gmail.com',
+        subject: 'Node.js Attandance Manager Password Reset',
+        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        console.log('mail sent');
+        // alert("link send to register Email");
+        // req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+        done(err, 'done');
+      });
+    }
+  ],function(err){
+    if(err) return next(err);
+    res.redirect('/forget');
+  });
+});
+
+router.get('/reset/:token', function(req, res) {
+  singupModel.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    if (!user) {
+      // req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/forgot');
+    }
+    res.render('reset', {token: req.params.token,title:'Attandance Manager',username:'',imagename:''});
+  });
+});
+
+router.post('/reset/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      singupModel.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+        if (!user) {
+          console.log('error Password reset token is invalid or has expired.');
+          return res.redirect('back');
+        }else{
+          var user_id = user._id;
+          if(req.body.password === req.body.confirm) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            var update = singupModel.findByIdAndUpdate(user_id,{password:req.body.password});
+            update.exec(function(err,data){
+              if(err) throw err;
+              return res.redirect('/login');
+            })
+          } 
+          else {
+              console.log("error Passwords do not match.");
+              return res.redirect('back');
+          }
+        }
+        
+      });
+    },
+  
+  ], function(err) {
+    res.redirect('/login');
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 router.get('/logout',checkloginuser, function(req, res, next) {
