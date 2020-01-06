@@ -17,17 +17,30 @@
           </thead>
           <tbody>
             <% records.forEach(function(row) {%>
-                <tr>  
+              <% if(row.percentage < 75){%>
+                <tr style="color: red;">  
                   <td><%=row.subject%></td>
                   <td><%=row.present%></td>
                   <td><%=row.absent%></td>
-                  <td><%=row.percentage%>%</td>
+                  <td ><%=row.percentage%>%</td>
                   <td><a class="btn btn-success btn-xs" href="/present/<%=row._id%>"><i class="fa fa-plus"></i></a></td>
                   <td><a class="btn btn-danger btn-xs" href="/absent/<%=row._id%>"><i class="fa fa-plus"></i></a></td>
                   <td><a class="btn btn-primary btn-xs" href="/edit/<%=row._id%>"><i class="fa fa-edit"></i></a>
                   <a class="btn btn-danger btn-xs" href="/delete/<%=row._id%>"><i class="fa fa-trash"></i></a></td>
                 </tr>
-             <%})%>  
+                
+                <%}else{%>
+                <tr>  
+                  <td><%=row.subject%></td>
+                  <td><%=row.present%></td>
+                  <td><%=row.absent%></td>
+                  <td ><%=row.percentage%>%</td>
+                  <td><a class="btn btn-success btn-xs" href="/present/<%=row._id%>"><i class="fa fa-plus"></i></a></td>
+                  <td><a class="btn btn-danger btn-xs" href="/absent/<%=row._id%>"><i class="fa fa-plus"></i></a></td>
+                  <td><a class="btn btn-primary btn-xs" href="/edit/<%=row._id%>"><i class="fa fa-edit"></i></a>
+                  <a class="btn btn-danger btn-xs" href="/delete/<%=row._id%>"><i class="fa fa-trash"></i></a></td>
+                </tr>
+             <%}})%>  
           </tbody>
         </table>  
       </div>
